@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pl">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Panel admina</title>
+
+<style>
+:root{
+  --yellow:#ffcc00;
+  --bg:#0b0b0b;
+  --card:#121212;
+  --border:#262626;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background: radial-gradient(circle at 20% 10%, #1f1a00 0%, #000 60%);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+/* CARD */
+.admin-card{
+  width:100%;
+  max-width:450px;
+  background:linear-gradient(145deg,#101010,#141414);
+  border-radius:20px;
+  padding:30px;
+  border:1px solid var(--border);
+  box-shadow:0 0 60px rgba(255,204,0,.1);
+  animation:fadeIn .5s ease;
+}
+
+/* TITLE */
+.admin-title{
+  text-align:center;
+  color:var(--yellow);
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:20px;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #333;
+  background:#0a0a0a;
+  color:#fff;
+  margin-bottom:15px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--yellow),#ffb300);
+  color:#000;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 20px rgba(255,204,0,.6);
+}
+
+/* CODES LIST */
+#codes{
+  margin-top:20px;
+  max-height:300px;
+  overflow:auto;
+}
+
+/* ITEM */
+.code-item{
+  background:#111;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+  border:1px solid #222;
+}
+
+.code-actions{
+  margin-top:8px;
+  display:flex;
+  gap:10px;
+}
+
+.code-actions button{
+  flex:1;
+  padding:8px;
+  font-size:12px;
+}
+
+/* ANIM */
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="admin-card">
+
+  <div class="admin-title">Panel admina</div>
+
+  <input id="nick" placeholder="Nick użytkownika">
+
+  <button id="genBtn">GENERUJ KOD</button>
+
+  <div id="codes"></div>
+
+</div>
+
+<script type="module" src="js/admin.js"></script>
+
+</body>
+</html>

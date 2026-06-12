@@ -1,0 +1,210 @@
+<?php require_once 'ipalert.php'; ?>
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
+<title>mObywatel 4.0</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon.png">
+
+<style>
+:root {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #ffffff;
+  --sub: #a0a0a0;
+  --accent: #667eea;
+}
+
+body {
+  margin:0;
+  font-family:system-ui;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  background: linear-gradient(135deg, #121212, #2a2a2a);
+  color:var(--text);
+}
+
+/* loader */
+.loader {
+  text-align:center;
+}
+
+.spinner {
+  width:50px;
+  height:50px;
+  border:4px solid rgba(255,255,255,0.2);
+  border-top:4px solid #fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-bottom:20px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* install screen */
+.card {
+  background: var(--card);
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--sub);
+  margin-bottom: 20px;
+}
+
+.instructions {
+  text-align:left;
+  font-size:13px;
+  line-height:1.6;
+  background:#2a2a2a;
+  padding:15px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+  <div class="loader">
+    <div class="spinner"></div>
+    <div>Ładowanie...</div>
+  </div>
+</div>
+
+<script>
+(async function () {
+
+  function isMobile() {
+    const ua = navigator.userAgent.toLowerCase();
+    return /android|iphone|ipad|mobile/.test(ua);
+  }
+
+  function isStandalone() {
+    return window.navigator.standalone === true ||
+      window.matchMedia("(display-mode: standalone)").matches;
+  }
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open("obywatel_auth", 1);
+      req.onerror = () => reject();
+      req.onsuccess = () => resolve(req.result);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("auth_state")) {
+          db.createObjectStore("auth_state");
+        }
+      };
+    });
+  }
+
+  function getAuth(db) {
+    return new Promise((resolve) => {
+      const tx = db.transaction("auth_state", "readonly");
+      const store = tx.objectStore("auth_state");
+      const req = store.get("auth_state");
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    });
+  }
+
+  async function isActivated() {
+
+    if (localStorage.getItem("activated") === "true") {
+      return true;
+    }
+
+    try {
+      const db = await openDB();
+      const auth = await getAuth(db);
+
+      if (auth && (auth.refreshToken || auth.activated)) {
+        localStorage.setItem("activated", "true");
+        return true;
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
+  function showInstall() {
+    document.getElementById("app").innerHTML = `
+      <div class="card">
+        <div class="icon">⬇️</div>
+        <div class="title">Zainstaluj aplikację</div>
+        <div class="subtitle">
+          Aby korzystać z mObywatel, dodaj aplikację do ekranu głównego
+        </div>
+
+        <div class="instructions">
+          <strong>Jak zainstalować:</strong><br><br>
+
+          <strong>iOS (Safari):</strong><br>
+          1. Dotknij przycisku udostępniania<br>
+          2. Wybierz "Dodaj do ekranu głównego"<br><br>
+
+          <strong>Android (Chrome):</strong><br>
+          1. Dotknij menu ⋮<br>
+          2. Wybierz "Dodaj do ekranu głównego"
+        </div>
+      </div>
+    `;
+  }
+
+  async function route() {
+
+    if (!isMobile()) {
+      document.getElementById("app").innerHTML = "<h1>Only mobile</h1>";
+      return;
+    }
+
+    if (!isStandalone()) {
+      showInstall();
+      return;
+    }
+
+    const activated = await isActivated();
+
+    if (activated) {
+      window.location.replace("login.html");
+    } else {
+      window.location.replace("activate.html");
+    }
+  }
+
+  route();
+
+})();
+</script>
+
+<script src="js/update-checker.js" defer></script>
+<script src="/images.js" defer></script>
+
+</body>
+</html>
