@@ -5,11 +5,11 @@
 
 window.DEV_CONFIG = {
   // UWAGA: NIGDY nie wdrażaj z DEV_MODE = true na produkcję!
-  DEV_MODE: false,
+  DEV_MODE: true,
 
   // Opcje deweloperskie
-  SKIP_AUTH_CHECK: false, // Pomija sprawdzanie autentykacji
-  SKIP_PWA_CHECK: false, // Pomija sprawdzanie trybu PWA
+  SKIP_AUTH_CHECK: true, // Pomija sprawdzanie autentykacji
+  SKIP_PWA_CHECK: true, // Pomija sprawdzanie trybu PWA
   SKIP_MOBILE_CHECK: false, // Pomija sprawdzanie urządzenia mobilnego
   ALLOW_DESKTOP: false, // Pozwala na dostęp z desktopa
   LOG_VERBOSE: false, // Szczegółowe logi w konsoli
